@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import type { SubnetInfo, VLSMSubnet } from './subnet';
+import type { IPv6SubnetInfo, IPv6VLSMSubnet } from './ipv6';
 
 /**
  * Export Subnet Calculator results to PDF
@@ -306,4 +307,289 @@ export function exportSubnetVisualizerToPDF(
 
   // Save
   doc.save(`visualizer_${networkIP.replace(/\./g, '_')}_${originalCIDR}_to_${newCIDR}.pdf`);
+}
+
+/**
+ * Export IPv6 Subnet Calculator results to PDF
+ */
+export function exportIPv6SubnetToPDF(subnet: IPv6SubnetInfo) {
+  const doc = new jsPDF();
+
+  // Title
+  doc.setFontSize(20);
+  doc.setTextColor(37, 99, 235); // Blue
+  doc.text('IPv6 Subnet Calculator - Risultati', 14, 20);
+
+  // Subtitle
+  doc.setFontSize(10);
+  doc.setTextColor(100, 100, 100);
+  doc.text(`Generato il ${new Date().toLocaleString('it-IT')}`, 14, 27);
+
+  // Main Info
+  doc.setFontSize(14);
+  doc.setTextColor(0, 0, 0);
+  doc.text('Informazioni Subnet IPv6', 14, 40);
+
+  doc.setFontSize(10);
+  let y = 48;
+
+  const mainInfo = [
+    ['Indirizzo IPv6', subnet.ipAddressCompressed],
+    ['Formato Espanso', subnet.ipAddressExpanded],
+    ['Prefix Length', `/${subnet.prefix}`],
+    ['Tipo Indirizzo', subnet.addressType],
+    ['Scope', subnet.scope],
+    ['Indirizzi Totali', subnet.totalAddresses],
+  ];
+
+  mainInfo.forEach(([label, value]) => {
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${label}:`, 14, y);
+    doc.setFont('helvetica', 'normal');
+    // Split long text if needed
+    const maxWidth = 110;
+    const lines = doc.splitTextToSize(value, maxWidth);
+    doc.text(lines, 80, y);
+    y += 7 * lines.length;
+  });
+
+  // Network Details Table
+  y += 8;
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Dettagli di Rete', 14, y);
+  y += 8;
+
+  const networkDetails = [
+    ['Network Address (Compresso)', subnet.networkAddressCompressed],
+    ['Network Address (Espanso)', subnet.networkAddress],
+    ['Subnet Mask', subnet.subnetMask],
+    ['Primo Indirizzo', subnet.firstAddress],
+    ['Ultimo Indirizzo', subnet.lastAddress],
+  ];
+
+  autoTable(doc, {
+    startY: y,
+    head: [['Parametro', 'Valore']],
+    body: networkDetails,
+    theme: 'grid',
+    headStyles: {
+      fillColor: [37, 99, 235],
+      textColor: 255,
+      fontSize: 10,
+      fontStyle: 'bold',
+    },
+    bodyStyles: {
+      fontSize: 8,
+      font: 'courier',
+    },
+    columnStyles: {
+      0: { cellWidth: 60 },
+      1: { cellWidth: 120 },
+    },
+    alternateRowStyles: {
+      fillColor: [245, 247, 250],
+    },
+  });
+
+  // Binary Representation
+  let finalY = (doc as any).lastAutoTable.finalY + 10;
+
+  // Check if we need a new page
+  if (finalY > 240) {
+    doc.addPage();
+    finalY = 20;
+  }
+
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Rappresentazione Binaria', 14, finalY);
+  finalY += 7;
+
+  doc.setFontSize(7);
+  doc.setFont('courier', 'normal');
+  // Split binary into multiple lines for readability
+  const binaryParts = subnet.binary.split(':');
+  const binaryLine1 = binaryParts.slice(0, 4).join(':');
+  const binaryLine2 = binaryParts.slice(4, 8).join(':');
+
+  doc.text(binaryLine1, 14, finalY);
+  finalY += 4;
+  doc.text(binaryLine2, 14, finalY);
+  finalY += 10;
+
+  // Reverse DNS
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Reverse DNS (PTR Record)', 14, finalY);
+  finalY += 7;
+
+  doc.setFontSize(7);
+  doc.setFont('courier', 'normal');
+  // Split reverse DNS into multiple lines
+  const reverseDNS = subnet.reverseDNS;
+  const maxCharsPerLine = 80;
+  const reverseDNSLines = [];
+  for (let i = 0; i < reverseDNS.length; i += maxCharsPerLine) {
+    reverseDNSLines.push(reverseDNS.substring(i, i + maxCharsPerLine));
+  }
+
+  reverseDNSLines.forEach(line => {
+    doc.text(line, 14, finalY);
+    finalY += 4;
+  });
+
+  // IPv4 Mapped (if applicable)
+  if (subnet.ipv4Mapped) {
+    finalY += 5;
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('IPv4 Mapped Address', 14, finalY);
+    finalY += 7;
+
+    doc.setFontSize(10);
+    doc.setFont('courier', 'normal');
+    doc.text(subnet.ipv4Mapped, 14, finalY);
+  }
+
+  // Footer
+  doc.setFontSize(8);
+  doc.setTextColor(150, 150, 150);
+  doc.text('IPv6 Subnet Calculator by Prof. Carello Nicolò', 14, doc.internal.pageSize.height - 10);
+
+  // Save
+  const filename = subnet.ipAddressCompressed.replace(/:/g, '_').replace(/\//g, '-');
+  doc.save(`ipv6_subnet_${filename}_${subnet.prefix}.pdf`);
+}
+
+/**
+ * Export IPv6 VLSM results to PDF
+ */
+export function exportIPv6VLSMToPDF(
+  networkIP: string,
+  networkPrefix: number,
+  subnets: IPv6VLSMSubnet[]
+) {
+  const doc = new jsPDF();
+
+  // Title
+  doc.setFontSize(20);
+  doc.setTextColor(37, 99, 235);
+  doc.text('IPv6 VLSM Calculator - Risultati', 14, 20);
+
+  // Subtitle
+  doc.setFontSize(10);
+  doc.setTextColor(100, 100, 100);
+  doc.text(`Rete: ${networkIP}/${networkPrefix}`, 14, 27);
+  doc.text(`Generato il ${new Date().toLocaleString('it-IT')}`, 14, 32);
+
+  // Summary
+  doc.setFontSize(14);
+  doc.setTextColor(0, 0, 0);
+  doc.text(`Subnet Allocate: ${subnets.length}`, 14, 45);
+
+  // Subnets Table
+  const tableData = subnets.map((subnet) => [
+    subnet.name,
+    subnet.requiredHosts,
+    subnet.allocatedHosts,
+    `/${subnet.prefix}`,
+    subnet.networkAddressCompressed,
+    subnet.firstAddress,
+    subnet.lastAddress,
+  ]);
+
+  autoTable(doc, {
+    startY: 52,
+    head: [
+      [
+        'Nome',
+        'Indirizzi\nRichiesti',
+        'Indirizzi\nAllocati',
+        'Prefix',
+        'Network',
+        'Primo IP',
+        'Ultimo IP',
+      ],
+    ],
+    body: tableData,
+    theme: 'grid',
+    headStyles: {
+      fillColor: [37, 99, 235],
+      textColor: 255,
+      fontSize: 8,
+      fontStyle: 'bold',
+      halign: 'center',
+    },
+    bodyStyles: {
+      fontSize: 7,
+      font: 'courier',
+    },
+    columnStyles: {
+      0: { fontStyle: 'bold', cellWidth: 25 },
+      1: { halign: 'center', cellWidth: 20 },
+      2: { halign: 'center', cellWidth: 20 },
+      3: { halign: 'center', cellWidth: 15 },
+    },
+    alternateRowStyles: {
+      fillColor: [245, 247, 250],
+    },
+    margin: { left: 8, right: 8 },
+  });
+
+  // Detailed breakdown for each subnet
+  let currentY = (doc as any).lastAutoTable.finalY + 15;
+
+  subnets.forEach((subnet, index) => {
+    // Add new page if needed
+    if (currentY > 240) {
+      doc.addPage();
+      currentY = 20;
+    }
+
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${index + 1}. ${subnet.name}`, 14, currentY);
+    currentY += 7;
+
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+
+    const details = [
+      `Network: ${subnet.networkAddressCompressed}/${subnet.prefix}`,
+      `Primo IP: ${subnet.firstAddress}`,
+      `Ultimo IP: ${subnet.lastAddress}`,
+      `Indirizzi: ${subnet.allocatedHosts} (richiesti: ${subnet.requiredHosts})`,
+    ];
+
+    details.forEach((detail) => {
+      // Split long lines
+      const lines = doc.splitTextToSize(detail, 170);
+      lines.forEach((line: string) => {
+        doc.text(line, 20, currentY);
+        currentY += 5;
+      });
+    });
+
+    currentY += 5;
+  });
+
+  // Footer
+  doc.setFontSize(8);
+  doc.setTextColor(150, 150, 150);
+  const pageCount = (doc as any).internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.text(
+      `Pagina ${i} di ${pageCount}`,
+      doc.internal.pageSize.width / 2,
+      doc.internal.pageSize.height - 10,
+      { align: 'center' }
+    );
+    doc.text('IPv6 Subnet Calculator by Prof. Carello Nicolò', 14, doc.internal.pageSize.height - 10);
+  }
+
+  // Save
+  const filename = networkIP.replace(/:/g, '_').replace(/\//g, '-');
+  doc.save(`ipv6_vlsm_${filename}_${networkPrefix}.pdf`);
 }

@@ -5,7 +5,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SubnetCalculator } from '@/components/SubnetCalculator';
 import { VLSMCalculator } from '@/components/VLSMCalculator';
 import { SubnetVisualizer } from '@/components/SubnetVisualizer';
+import { IPv6SubnetCalculator } from '@/components/IPv6SubnetCalculator';
+import { IPv6VLSMCalculator } from '@/components/IPv6VLSMCalculator';
+import { IPv6SubnetVisualizer } from '@/components/IPv6SubnetVisualizer';
 import { GuideModal } from '@/components/GuideModal';
+import { IPv6GuideModal } from '@/components/IPv6GuideModal';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function Home() {
   return (
@@ -26,7 +31,9 @@ export default function Home() {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <ThemeToggle />
               <GuideModal />
+              <IPv6GuideModal />
               <a
                 href="https://github.com"
                 target="_blank"
@@ -51,38 +58,84 @@ export default function Home() {
             </span>
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Calcola subnet IPv4, VLSM e visualizza divisioni di rete in modo semplice e intuitivo.
+            Calcola subnet IPv4 e IPv6, VLSM e visualizza divisioni di rete in modo semplice e intuitivo.
             Perfetto per studenti, amministratori di rete e professionisti IT.
           </p>
         </div>
 
-        {/* Main Content */}
-        <Tabs defaultValue="calculator" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid h-auto p-1">
-            <TabsTrigger value="calculator" className="gap-2">
-              <Calculator className="h-4 w-4" />
-              <span>Calculator</span>
+        {/* Main Content - Protocol Tabs */}
+        <Tabs defaultValue="ipv4" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2 lg:w-auto lg:inline-grid h-auto p-1">
+            <TabsTrigger value="ipv4" className="gap-2">
+              <span className="font-semibold">IPv4</span>
             </TabsTrigger>
-            <TabsTrigger value="vlsm" className="gap-2">
-              <Network className="h-4 w-4" />
-              <span>VLSM</span>
-            </TabsTrigger>
-            <TabsTrigger value="visualizer" className="gap-2">
-              <Eye className="h-4 w-4" />
-              <span>Visualizer</span>
+            <TabsTrigger value="ipv6" className="gap-2">
+              <span className="font-semibold">IPv6</span>
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="calculator" className="space-y-6">
-            <SubnetCalculator />
+          {/* IPv4 Section */}
+          <TabsContent value="ipv4" className="space-y-6">
+            <Tabs defaultValue="calculator" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid h-auto p-1">
+                <TabsTrigger value="calculator" className="gap-2">
+                  <Calculator className="h-4 w-4" />
+                  <span>Calculator</span>
+                </TabsTrigger>
+                <TabsTrigger value="vlsm" className="gap-2">
+                  <Network className="h-4 w-4" />
+                  <span>VLSM</span>
+                </TabsTrigger>
+                <TabsTrigger value="visualizer" className="gap-2">
+                  <Eye className="h-4 w-4" />
+                  <span>Visualizer</span>
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="calculator" className="space-y-6">
+                <SubnetCalculator />
+              </TabsContent>
+
+              <TabsContent value="vlsm" className="space-y-6">
+                <VLSMCalculator />
+              </TabsContent>
+
+              <TabsContent value="visualizer" className="space-y-6">
+                <SubnetVisualizer />
+              </TabsContent>
+            </Tabs>
           </TabsContent>
 
-          <TabsContent value="vlsm" className="space-y-6">
-            <VLSMCalculator />
-          </TabsContent>
+          {/* IPv6 Section */}
+          <TabsContent value="ipv6" className="space-y-6">
+            <Tabs defaultValue="calculator" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid h-auto p-1">
+                <TabsTrigger value="calculator" className="gap-2">
+                  <Calculator className="h-4 w-4" />
+                  <span>Calculator</span>
+                </TabsTrigger>
+                <TabsTrigger value="vlsm" className="gap-2">
+                  <Network className="h-4 w-4" />
+                  <span>VLSM</span>
+                </TabsTrigger>
+                <TabsTrigger value="visualizer" className="gap-2">
+                  <Eye className="h-4 w-4" />
+                  <span>Visualizer</span>
+                </TabsTrigger>
+              </TabsList>
 
-          <TabsContent value="visualizer" className="space-y-6">
-            <SubnetVisualizer />
+              <TabsContent value="calculator" className="space-y-6">
+                <IPv6SubnetCalculator />
+              </TabsContent>
+
+              <TabsContent value="vlsm" className="space-y-6">
+                <IPv6VLSMCalculator />
+              </TabsContent>
+
+              <TabsContent value="visualizer" className="space-y-6">
+                <IPv6SubnetVisualizer />
+              </TabsContent>
+            </Tabs>
           </TabsContent>
         </Tabs>
       </div>
