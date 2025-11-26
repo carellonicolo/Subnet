@@ -9,7 +9,6 @@ import { IPv6SubnetCalculator } from '@/components/IPv6SubnetCalculator';
 import { IPv6VLSMCalculator } from '@/components/IPv6VLSMCalculator';
 import { IPv6SubnetVisualizer } from '@/components/IPv6SubnetVisualizer';
 import { GuideModal } from '@/components/GuideModal';
-import { IPv6GuideModal } from '@/components/IPv6GuideModal';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function Home() {
@@ -33,7 +32,6 @@ export default function Home() {
             <div className="flex items-center gap-2">
               <ThemeToggle />
               <GuideModal />
-              <IPv6GuideModal />
               <a
                 href="https://github.com"
                 target="_blank"
