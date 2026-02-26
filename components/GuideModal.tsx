@@ -830,7 +830,7 @@ export function GuideModal() {
                     <p className="text-sm font-semibold mb-2">Differenze Chiave da IPv4:</p>
                     <ul className="list-disc list-inside space-y-1 ml-2 text-xs">
                       <li>Non servono network address e broadcast address riservati</li>
-                      <li>Non c&apos;è bisogno di "risparmiare" indirizzi - lo spazio è enorme</li>
+                      <li>Non c&apos;è bisogno di &quot;risparmiare&quot; indirizzi - lo spazio è enorme</li>
                       <li>Si usano nibble boundaries (4 bit) per facilità di lettura</li>
                       <li>Standard: /64 per le LAN, /48 per organizzazioni</li>
                     </ul>
