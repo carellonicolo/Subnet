@@ -9,8 +9,15 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Subnet Calculator | IPv4 Subnetting Tool",
-  description: "Professional IPv4 subnet calculator with VLSM support and visual subnet planner. Perfect for students and network engineers.",
+  title: "Subnet Calculator | IPv4 & IPv6 Subnetting Tool",
+  description: "Calcolatore professionale di subnet IPv4 e IPv6 con supporto VLSM, visualizzatore e export PDF. Perfetto per studenti e amministratori di rete.",
+  keywords: ["subnet calculator", "VLSM", "IPv4", "IPv6", "CIDR", "subnetting", "network", "calcolo subnet"],
+  openGraph: {
+    title: "Subnet Calculator | IPv4 & IPv6",
+    description: "Calcolatore professionale di subnet con VLSM, visualizzatore e export PDF.",
+    type: "website",
+  },
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
@@ -29,6 +36,17 @@ export default function RootLayout({
         >
           {children}
         </ThemeProvider>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                  navigator.serviceWorker.register('/sw.js').catch(() => {});
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   );

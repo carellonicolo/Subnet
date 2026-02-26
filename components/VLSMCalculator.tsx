@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { calculateVLSM, type VLSMSubnet } from '@/utils/subnet';
+import { calculateVLSM, checkVLSMOverlap, type VLSMSubnet, type OverlapInfo } from '@/utils/subnet';
 import { exportVLSMToPDF } from '@/utils/pdfExport';
 
 interface SubnetRequirement {
@@ -33,6 +33,7 @@ export function VLSMCalculator() {
   ]);
   const [result, setResult] = useState<VLSMSubnet[] | null>(null);
   const [error, setError] = useState('');
+  const [overlaps, setOverlaps] = useState<OverlapInfo[]>([]);
   const [nextId, setNextId] = useState(4);
 
   const addSubnet = () => {
@@ -53,6 +54,7 @@ export function VLSMCalculator() {
   const handleCalculate = () => {
     setError('');
     setResult(null);
+    setOverlaps([]);
 
     const cidrNum = parseInt(cidr);
 
@@ -96,6 +98,10 @@ export function VLSMCalculator() {
     }
 
     setResult(vlsmResult);
+
+    // Check for overlaps
+    const overlapResults = checkVLSMOverlap(vlsmResult);
+    setOverlaps(overlapResults);
   };
 
   return (
@@ -120,6 +126,7 @@ export function VLSMCalculator() {
                 placeholder="192.168.1.0"
                 value={networkIP}
                 onChange={(e) => setNetworkIP(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleCalculate()}
               />
             </div>
             <div className="space-y-2">
@@ -208,6 +215,19 @@ export function VLSMCalculator() {
           </div>
         </CardContent>
       </Card>
+
+      {overlaps.length > 0 && (
+        <div className="p-4 rounded-lg bg-orange-100 dark:bg-orange-900/30 border border-orange-300 dark:border-orange-700">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-orange-600 dark:text-orange-400 font-semibold">⚠️ Attenzione: Sovrapposizione Subnet</span>
+          </div>
+          <ul className="text-sm text-orange-800 dark:text-orange-300 space-y-1">
+            {overlaps.map((overlap, i) => (
+              <li key={i}>• <strong>{overlap.subnet1}</strong> e <strong>{overlap.subnet2}</strong>: {overlap.description}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {result && result.length > 0 && (
         <>

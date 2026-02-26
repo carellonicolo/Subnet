@@ -101,9 +101,9 @@ export function expandIPv6(ip: string): string {
     const ipv4Segments = ipv4Part.split('.');
     if (ipv4Segments.length === 4) {
       const hex1 = parseInt(ipv4Segments[0]).toString(16).padStart(2, '0') +
-                   parseInt(ipv4Segments[1]).toString(16).padStart(2, '0');
+        parseInt(ipv4Segments[1]).toString(16).padStart(2, '0');
       const hex2 = parseInt(ipv4Segments[2]).toString(16).padStart(2, '0') +
-                   parseInt(ipv4Segments[3]).toString(16).padStart(2, '0');
+        parseInt(ipv4Segments[3]).toString(16).padStart(2, '0');
       ip = `0:0:0:0:0:ffff:${hex1}:${hex2}`;
     }
   }
@@ -311,7 +311,7 @@ export function getIPv6AddressType(ip: string): string {
 
   // Link-Local (fe80::/10)
   if (firstSegment.startsWith('fe8') || firstSegment.startsWith('fe9') ||
-      firstSegment.startsWith('fea') || firstSegment.startsWith('feb')) {
+    firstSegment.startsWith('fea') || firstSegment.startsWith('feb')) {
     return 'Link-Local Unicast';
   }
 
@@ -480,26 +480,35 @@ export function calculateIPv6VLSM(
   });
 
   const result: IPv6VLSMSubnet[] = [];
-  const networkBinary = ipv6ToBinary(getIPv6NetworkAddress(networkIP, networkPrefix));
+  const networkAddress = getIPv6NetworkAddress(networkIP, networkPrefix);
+  const networkBinary = ipv6ToBinary(networkAddress);
   const networkBitsOnly = networkBinary.replace(/:/g, '');
 
-  let currentBitPosition = networkPrefix;
+  // Track current position as a binary string for proper advancement
+  let currentBits = networkBitsOnly;
 
   for (const subnet of sortedSubnets) {
     const prefix = calculatePrefixForAddresses(subnet.addresses);
-    const subnetSize = 128 - prefix;
 
-    // Check if we have enough space
-    if (currentBitPosition + subnetSize > 128) {
-      return null; // Not enough space
+    // Check if prefix is valid within the network
+    if (prefix < networkPrefix) {
+      return null; // Requested subnet is larger than the network
     }
 
-    // Calculate subnet address
-    const subnetBits = networkBitsOnly.substring(0, prefix) + '0'.repeat(128 - prefix);
+    // Align to subnet boundary: zero out host bits
+    const subnetBits = currentBits.substring(0, prefix) + '0'.repeat(128 - prefix);
     const subnetAddress = binaryToIPv6(subnetBits);
     const firstAddress = compressIPv6(subnetAddress);
     const lastAddress = compressIPv6(getIPv6LastAddress(subnetAddress, prefix));
     const totalAddresses = getTotalIPv6Addresses(prefix);
+
+    // Calculate the last address bits to check we're still within bounds
+    const lastBits = currentBits.substring(0, prefix) + '1'.repeat(128 - prefix);
+    const networkLastBits = networkBitsOnly.substring(0, networkPrefix) + '1'.repeat(128 - networkPrefix);
+
+    if (lastBits > networkLastBits) {
+      return null; // Not enough space in the network
+    }
 
     result.push({
       name: subnet.name,
@@ -513,12 +522,40 @@ export function calculateIPv6VLSM(
       addressRange: `${firstAddress} - ${lastAddress}`,
     });
 
-    // For simplicity, move to next major subnet boundary
-    // In real IPv6, we'd increment properly
-    currentBitPosition = prefix;
+    // Advance to next subnet: increment the subnet portion
+    // Add 1 to the prefix-th bit position
+    const nextSubnetBits = incrementBinaryAtPosition(subnetBits, prefix);
+    if (nextSubnetBits === null) {
+      // Overflow - no more space
+      if (sortedSubnets.indexOf(subnet) < sortedSubnets.length - 1) {
+        return null;
+      }
+    } else {
+      currentBits = nextSubnetBits;
+    }
   }
 
   return result;
+}
+
+/**
+ * Increments a 128-bit binary string at a given bit position
+ * Returns null on overflow
+ */
+function incrementBinaryAtPosition(bits: string, position: number): string | null {
+  const arr = bits.split('');
+  let carry = 1;
+  for (let i = position - 1; i >= 0 && carry > 0; i--) {
+    const sum = parseInt(arr[i]) + carry;
+    arr[i] = (sum % 2).toString();
+    carry = Math.floor(sum / 2);
+  }
+  if (carry > 0) return null; // overflow
+  // Zero out everything after position
+  for (let i = position; i < 128; i++) {
+    arr[i] = '0';
+  }
+  return arr.join('');
 }
 
 /**
@@ -576,3 +613,37 @@ export const COMMON_IPV6_PREFIXES = [
   { prefix: 16, name: 'Large ISP/RIR', description: 'Allocazione per grandi ISP o RIR' },
   { prefix: 3, name: 'Global Unicast', description: 'Spazio Global Unicast (2000::/3)' },
 ];
+
+/**
+ * Checks for overlapping subnets in an IPv6 VLSM allocation
+ */
+export interface IPv6OverlapInfo {
+  subnet1: string;
+  subnet2: string;
+  description: string;
+}
+
+export function checkIPv6VLSMOverlap(subnets: IPv6VLSMSubnet[]): IPv6OverlapInfo[] {
+  const overlaps: IPv6OverlapInfo[] = [];
+
+  for (let i = 0; i < subnets.length; i++) {
+    const startA = ipv6ToBinary(subnets[i].networkAddress).replace(/:/g, '');
+    const endA = ipv6ToBinary(getIPv6LastAddress(subnets[i].networkAddress, subnets[i].prefix)).replace(/:/g, '');
+
+    for (let j = i + 1; j < subnets.length; j++) {
+      const startB = ipv6ToBinary(subnets[j].networkAddress).replace(/:/g, '');
+      const endB = ipv6ToBinary(getIPv6LastAddress(subnets[j].networkAddress, subnets[j].prefix)).replace(/:/g, '');
+
+      // Check if ranges overlap using string comparison (works for fixed-length binary)
+      if (startA <= endB && startB <= endA) {
+        overlaps.push({
+          subnet1: subnets[i].name,
+          subnet2: subnets[j].name,
+          description: `${subnets[i].networkAddressCompressed}/${subnets[i].prefix} si sovrappone con ${subnets[j].networkAddressCompressed}/${subnets[j].prefix}`,
+        });
+      }
+    }
+  }
+
+  return overlaps;
+}

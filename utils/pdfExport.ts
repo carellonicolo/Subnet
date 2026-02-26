@@ -6,22 +6,33 @@ import type { IPv6SubnetInfo, IPv6VLSMSubnet } from './ipv6';
 /**
  * Export Subnet Calculator results to PDF
  */
-export function exportSubnetToPDF(subnet: SubnetInfo) {
+export function exportSubnetToPDF(subnet: SubnetInfo, isDarkMode: boolean = false) {
   const doc = new jsPDF();
+
+  // Theme colors
+  const bg = isDarkMode ? [30, 41, 59] : [255, 255, 255]; // slate-800 vs white
+  const textColor = isDarkMode ? [226, 232, 240] : [51, 51, 51]; // slate-200 vs dark
+  const headerBg = isDarkMode ? [51, 65, 85] : [59, 130, 246]; // slate-600 vs blue-500
+  const headerText = [255, 255, 255];
+  const altRowBg = isDarkMode ? [51, 65, 85] : [245, 247, 250];
+  const borderColor = isDarkMode ? [71, 85, 105] : [200, 200, 200];
+
+  doc.setFillColor(bg[0], bg[1], bg[2]);
+  doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, 'F');
 
   // Title
   doc.setFontSize(20);
-  doc.setTextColor(37, 99, 235); // Blue
+  doc.setTextColor(headerBg[0], headerBg[1], headerBg[2]);
   doc.text('Subnet Calculator - Risultati', 14, 20);
 
   // Subtitle
   doc.setFontSize(10);
-  doc.setTextColor(100, 100, 100);
+  doc.setTextColor(textColor[0], textColor[1], textColor[2]);
   doc.text(`Generato il ${new Date().toLocaleString('it-IT')}`, 14, 27);
 
   // Main Info
   doc.setFontSize(14);
-  doc.setTextColor(0, 0, 0);
+  doc.setTextColor(textColor[0], textColor[1], textColor[2]);
   doc.text('Informazioni Subnet', 14, 40);
 
   doc.setFontSize(10);
@@ -38,6 +49,7 @@ export function exportSubnetToPDF(subnet: SubnetInfo) {
 
   mainInfo.forEach(([label, value]) => {
     doc.setFont('helvetica', 'bold');
+    doc.setTextColor(textColor[0], textColor[1], textColor[2]);
     doc.text(`${label}:`, 14, y);
     doc.setFont('helvetica', 'normal');
     doc.text(value, 80, y);
@@ -48,6 +60,7 @@ export function exportSubnetToPDF(subnet: SubnetInfo) {
   y += 8;
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
+  doc.setTextColor(textColor[0], textColor[1], textColor[2]);
   doc.text('Dettagli Completi', 14, y);
   y += 8;
 
@@ -64,8 +77,8 @@ export function exportSubnetToPDF(subnet: SubnetInfo) {
     ],
     theme: 'grid',
     headStyles: {
-      fillColor: [37, 99, 235],
-      textColor: 255,
+      fillColor: [headerBg[0], headerBg[1], headerBg[2]],
+      textColor: [headerText[0], headerText[1], headerText[2]],
       fontSize: 10,
       fontStyle: 'bold',
     },
@@ -74,16 +87,20 @@ export function exportSubnetToPDF(subnet: SubnetInfo) {
       font: 'courier',
     },
     alternateRowStyles: {
-      fillColor: [245, 247, 250],
+      fillColor: [altRowBg[0], altRowBg[1], altRowBg[2]],
+    },
+    styles: {
+      textColor: [textColor[0], textColor[1], textColor[2]],
+      lineColor: [borderColor[0], borderColor[1], borderColor[2]],
     },
   });
 
   // Footer
   const finalY = (doc as any).lastAutoTable.finalY || y + 50;
   doc.setFontSize(8);
-  doc.setTextColor(150, 150, 150);
-  doc.text('Subnet Calculator by IPv4 Subnetting Tool', 14, finalY + 15);
-  doc.text('https://subnet-calculator.netlify.app', 14, finalY + 20);
+  doc.setTextColor(textColor[0], textColor[1], textColor[2]);
+  doc.text('Subnet Calculator by Prof. Carello Nicolò', 14, finalY + 15);
+  doc.text('https://github.com/carellonicolo/Subnet', 14, finalY + 20);
 
   // Save
   doc.save(`subnet_${subnet.ipAddress.replace(/\./g, '_')}_${subnet.cidr}.pdf`);
@@ -95,24 +112,36 @@ export function exportSubnetToPDF(subnet: SubnetInfo) {
 export function exportVLSMToPDF(
   networkIP: string,
   networkCIDR: number,
-  subnets: VLSMSubnet[]
+  subnets: VLSMSubnet[],
+  isDarkMode: boolean = false
 ) {
   const doc = new jsPDF();
 
+  // Theme colors
+  const bg = isDarkMode ? [30, 41, 59] : [255, 255, 255]; // slate-800 vs white
+  const textColor = isDarkMode ? [226, 232, 240] : [51, 51, 51]; // slate-200 vs dark
+  const headerBg = isDarkMode ? [51, 65, 85] : [59, 130, 246]; // slate-600 vs blue-500
+  const headerText = [255, 255, 255];
+  const altRowBg = isDarkMode ? [51, 65, 85] : [245, 247, 250];
+  const borderColor = isDarkMode ? [71, 85, 105] : [200, 200, 200];
+
+  doc.setFillColor(bg[0], bg[1], bg[2]);
+  doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, 'F');
+
   // Title
-  doc.setFontSize(20);
-  doc.setTextColor(37, 99, 235);
+  doc.setFontSize(18);
+  doc.setTextColor(headerBg[0], headerBg[1], headerBg[2]);
   doc.text('VLSM Calculator - Risultati', 14, 20);
 
   // Subtitle
   doc.setFontSize(10);
-  doc.setTextColor(100, 100, 100);
+  doc.setTextColor(textColor[0], textColor[1], textColor[2]);
   doc.text(`Rete: ${networkIP}/${networkCIDR}`, 14, 27);
   doc.text(`Generato il ${new Date().toLocaleString('it-IT')}`, 14, 32);
 
   // Summary
   doc.setFontSize(14);
-  doc.setTextColor(0, 0, 0);
+  doc.setTextColor(textColor[0], textColor[1], textColor[2]);
   doc.text(`Subnet Allocate: ${subnets.length}`, 14, 45);
 
   // Subnets Table
@@ -144,8 +173,8 @@ export function exportVLSMToPDF(
     body: tableData,
     theme: 'grid',
     headStyles: {
-      fillColor: [37, 99, 235],
-      textColor: 255,
+      fillColor: [headerBg[0], headerBg[1], headerBg[2]],
+      textColor: [headerText[0], headerText[1], headerText[2]],
       fontSize: 8,
       fontStyle: 'bold',
       halign: 'center',
@@ -161,7 +190,11 @@ export function exportVLSMToPDF(
       3: { halign: 'center' },
     },
     alternateRowStyles: {
-      fillColor: [245, 247, 250],
+      fillColor: [altRowBg[0], altRowBg[1], altRowBg[2]],
+    },
+    styles: {
+      textColor: [textColor[0], textColor[1], textColor[2]],
+      lineColor: [borderColor[0], borderColor[1], borderColor[2]],
     },
     margin: { left: 8, right: 8 },
   });
@@ -178,11 +211,13 @@ export function exportVLSMToPDF(
 
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
+    doc.setTextColor(textColor[0], textColor[1], textColor[2]);
     doc.text(`${index + 1}. ${subnet.name}`, 14, currentY);
     currentY += 7;
 
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
+    doc.setTextColor(textColor[0], textColor[1], textColor[2]);
 
     const details = [
       `Network: ${subnet.networkAddress}/${subnet.cidr}`,
@@ -202,7 +237,7 @@ export function exportVLSMToPDF(
 
   // Footer
   doc.setFontSize(8);
-  doc.setTextColor(150, 150, 150);
+  doc.setTextColor(textColor[0], textColor[1], textColor[2]);
   const pageCount = (doc as any).internal.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
@@ -212,7 +247,7 @@ export function exportVLSMToPDF(
       doc.internal.pageSize.height - 10,
       { align: 'center' }
     );
-    doc.text('Subnet Calculator by IPv4 Subnetting Tool', 14, doc.internal.pageSize.height - 10);
+    doc.text('Subnet Calculator by Prof. Carello Nicolò', 14, doc.internal.pageSize.height - 10);
   }
 
   // Save
@@ -226,25 +261,37 @@ export function exportSubnetVisualizerToPDF(
   networkIP: string,
   originalCIDR: number,
   newCIDR: number,
-  subnets: SubnetInfo[]
+  subnets: SubnetInfo[],
+  isDarkMode: boolean = false
 ) {
   const doc = new jsPDF();
 
+  // Theme colors
+  const bg = isDarkMode ? [30, 41, 59] : [255, 255, 255]; // slate-800 vs white
+  const textColor = isDarkMode ? [226, 232, 240] : [51, 51, 51]; // slate-200 vs dark
+  const headerBg = isDarkMode ? [51, 65, 85] : [59, 130, 246]; // slate-600 vs blue-500
+  const headerText = [255, 255, 255];
+  const altRowBg = isDarkMode ? [51, 65, 85] : [245, 247, 250];
+  const borderColor = isDarkMode ? [71, 85, 105] : [200, 200, 200];
+
+  doc.setFillColor(bg[0], bg[1], bg[2]);
+  doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, 'F');
+
   // Title
   doc.setFontSize(20);
-  doc.setTextColor(37, 99, 235);
+  doc.setTextColor(headerBg[0], headerBg[1], headerBg[2]);
   doc.text('Subnet Visualizer - Risultati', 14, 20);
 
   // Subtitle
   doc.setFontSize(10);
-  doc.setTextColor(100, 100, 100);
+  doc.setTextColor(textColor[0], textColor[1], textColor[2]);
   doc.text(`Rete: ${networkIP}/${originalCIDR} → /${newCIDR}`, 14, 27);
   doc.text(`Subnet Generate: ${subnets.length}`, 14, 32);
   doc.text(`Generato il ${new Date().toLocaleString('it-IT')}`, 14, 37);
 
   // Statistics
   doc.setFontSize(12);
-  doc.setTextColor(0, 0, 0);
+  doc.setTextColor(textColor[0], textColor[1], textColor[2]);
   doc.text('Statistiche', 14, 48);
 
   doc.setFontSize(10);
@@ -269,8 +316,8 @@ export function exportSubnetVisualizerToPDF(
     body: tableData,
     theme: 'grid',
     headStyles: {
-      fillColor: [37, 99, 235],
-      textColor: 255,
+      fillColor: [headerBg[0], headerBg[1], headerBg[2]],
+      textColor: [headerText[0], headerText[1], headerText[2]],
       fontSize: 9,
       fontStyle: 'bold',
       halign: 'center',
@@ -285,7 +332,11 @@ export function exportSubnetVisualizerToPDF(
       6: { halign: 'right', cellWidth: 15 },
     },
     alternateRowStyles: {
-      fillColor: [245, 247, 250],
+      fillColor: [altRowBg[0], altRowBg[1], altRowBg[2]],
+    },
+    styles: {
+      textColor: [textColor[0], textColor[1], textColor[2]],
+      lineColor: [borderColor[0], borderColor[1], borderColor[2]],
     },
     margin: { left: 8, right: 8 },
   });
@@ -295,14 +346,14 @@ export function exportSubnetVisualizerToPDF(
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
     doc.setFontSize(8);
-    doc.setTextColor(150, 150, 150);
+    doc.setTextColor(textColor[0], textColor[1], textColor[2]);
     doc.text(
       `Pagina ${i} di ${pageCount}`,
       doc.internal.pageSize.width / 2,
       doc.internal.pageSize.height - 10,
       { align: 'center' }
     );
-    doc.text('Subnet Calculator by IPv4 Subnetting Tool', 14, doc.internal.pageSize.height - 10);
+    doc.text('Subnet Calculator by Prof. Carello Nicolò', 14, doc.internal.pageSize.height - 10);
   }
 
   // Save
@@ -312,22 +363,33 @@ export function exportSubnetVisualizerToPDF(
 /**
  * Export IPv6 Subnet Calculator results to PDF
  */
-export function exportIPv6SubnetToPDF(subnet: IPv6SubnetInfo) {
+export function exportIPv6SubnetToPDF(subnet: IPv6SubnetInfo, isDarkMode: boolean = false) {
   const doc = new jsPDF();
+
+  // Theme colors
+  const bg = isDarkMode ? [30, 41, 59] : [255, 255, 255]; // slate-800 vs white
+  const textColor = isDarkMode ? [226, 232, 240] : [51, 51, 51]; // slate-200 vs dark
+  const headerBg = isDarkMode ? [51, 65, 85] : [59, 130, 246]; // slate-600 vs blue-500
+  const headerText = [255, 255, 255];
+  const altRowBg = isDarkMode ? [51, 65, 85] : [245, 247, 250];
+  const borderColor = isDarkMode ? [71, 85, 105] : [200, 200, 200];
+
+  doc.setFillColor(bg[0], bg[1], bg[2]);
+  doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, 'F');
 
   // Title
   doc.setFontSize(20);
-  doc.setTextColor(37, 99, 235); // Blue
+  doc.setTextColor(headerBg[0], headerBg[1], headerBg[2]); // Blue
   doc.text('IPv6 Subnet Calculator - Risultati', 14, 20);
 
   // Subtitle
   doc.setFontSize(10);
-  doc.setTextColor(100, 100, 100);
+  doc.setTextColor(textColor[0], textColor[1], textColor[2]);
   doc.text(`Generato il ${new Date().toLocaleString('it-IT')}`, 14, 27);
 
   // Main Info
   doc.setFontSize(14);
-  doc.setTextColor(0, 0, 0);
+  doc.setTextColor(textColor[0], textColor[1], textColor[2]);
   doc.text('Informazioni Subnet IPv6', 14, 40);
 
   doc.setFontSize(10);
@@ -344,6 +406,7 @@ export function exportIPv6SubnetToPDF(subnet: IPv6SubnetInfo) {
 
   mainInfo.forEach(([label, value]) => {
     doc.setFont('helvetica', 'bold');
+    doc.setTextColor(textColor[0], textColor[1], textColor[2]);
     doc.text(`${label}:`, 14, y);
     doc.setFont('helvetica', 'normal');
     // Split long text if needed
@@ -357,6 +420,7 @@ export function exportIPv6SubnetToPDF(subnet: IPv6SubnetInfo) {
   y += 8;
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
+  doc.setTextColor(textColor[0], textColor[1], textColor[2]);
   doc.text('Dettagli di Rete', 14, y);
   y += 8;
 
@@ -374,8 +438,8 @@ export function exportIPv6SubnetToPDF(subnet: IPv6SubnetInfo) {
     body: networkDetails,
     theme: 'grid',
     headStyles: {
-      fillColor: [37, 99, 235],
-      textColor: 255,
+      fillColor: [headerBg[0], headerBg[1], headerBg[2]],
+      textColor: [headerText[0], headerText[1], headerText[2]],
       fontSize: 10,
       fontStyle: 'bold',
     },
@@ -388,7 +452,11 @@ export function exportIPv6SubnetToPDF(subnet: IPv6SubnetInfo) {
       1: { cellWidth: 120 },
     },
     alternateRowStyles: {
-      fillColor: [245, 247, 250],
+      fillColor: [altRowBg[0], altRowBg[1], altRowBg[2]],
+    },
+    styles: {
+      textColor: [textColor[0], textColor[1], textColor[2]],
+      lineColor: [borderColor[0], borderColor[1], borderColor[2]],
     },
   });
 
@@ -403,11 +471,13 @@ export function exportIPv6SubnetToPDF(subnet: IPv6SubnetInfo) {
 
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
+  doc.setTextColor(textColor[0], textColor[1], textColor[2]);
   doc.text('Rappresentazione Binaria', 14, finalY);
   finalY += 7;
 
   doc.setFontSize(7);
   doc.setFont('courier', 'normal');
+  doc.setTextColor(textColor[0], textColor[1], textColor[2]);
   // Split binary into multiple lines for readability
   const binaryParts = subnet.binary.split(':');
   const binaryLine1 = binaryParts.slice(0, 4).join(':');
@@ -421,11 +491,13 @@ export function exportIPv6SubnetToPDF(subnet: IPv6SubnetInfo) {
   // Reverse DNS
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
+  doc.setTextColor(textColor[0], textColor[1], textColor[2]);
   doc.text('Reverse DNS (PTR Record)', 14, finalY);
   finalY += 7;
 
   doc.setFontSize(7);
   doc.setFont('courier', 'normal');
+  doc.setTextColor(textColor[0], textColor[1], textColor[2]);
   // Split reverse DNS into multiple lines
   const reverseDNS = subnet.reverseDNS;
   const maxCharsPerLine = 80;
@@ -444,17 +516,19 @@ export function exportIPv6SubnetToPDF(subnet: IPv6SubnetInfo) {
     finalY += 5;
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
+    doc.setTextColor(textColor[0], textColor[1], textColor[2]);
     doc.text('IPv4 Mapped Address', 14, finalY);
     finalY += 7;
 
     doc.setFontSize(10);
     doc.setFont('courier', 'normal');
+    doc.setTextColor(textColor[0], textColor[1], textColor[2]);
     doc.text(subnet.ipv4Mapped, 14, finalY);
   }
 
   // Footer
   doc.setFontSize(8);
-  doc.setTextColor(150, 150, 150);
+  doc.setTextColor(textColor[0], textColor[1], textColor[2]);
   doc.text('IPv6 Subnet Calculator by Prof. Carello Nicolò', 14, doc.internal.pageSize.height - 10);
 
   // Save
@@ -468,24 +542,36 @@ export function exportIPv6SubnetToPDF(subnet: IPv6SubnetInfo) {
 export function exportIPv6VLSMToPDF(
   networkIP: string,
   networkPrefix: number,
-  subnets: IPv6VLSMSubnet[]
+  subnets: IPv6VLSMSubnet[],
+  isDarkMode: boolean = false
 ) {
   const doc = new jsPDF();
 
+  // Theme colors
+  const bg = isDarkMode ? [30, 41, 59] : [255, 255, 255]; // slate-800 vs white
+  const textColor = isDarkMode ? [226, 232, 240] : [51, 51, 51]; // slate-200 vs dark
+  const headerBg = isDarkMode ? [51, 65, 85] : [59, 130, 246]; // slate-600 vs blue-500
+  const headerText = [255, 255, 255];
+  const altRowBg = isDarkMode ? [51, 65, 85] : [245, 247, 250];
+  const borderColor = isDarkMode ? [71, 85, 105] : [200, 200, 200];
+
+  doc.setFillColor(bg[0], bg[1], bg[2]);
+  doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, 'F');
+
   // Title
   doc.setFontSize(20);
-  doc.setTextColor(37, 99, 235);
+  doc.setTextColor(headerBg[0], headerBg[1], headerBg[2]);
   doc.text('IPv6 VLSM Calculator - Risultati', 14, 20);
 
   // Subtitle
   doc.setFontSize(10);
-  doc.setTextColor(100, 100, 100);
+  doc.setTextColor(textColor[0], textColor[1], textColor[2]);
   doc.text(`Rete: ${networkIP}/${networkPrefix}`, 14, 27);
   doc.text(`Generato il ${new Date().toLocaleString('it-IT')}`, 14, 32);
 
   // Summary
   doc.setFontSize(14);
-  doc.setTextColor(0, 0, 0);
+  doc.setTextColor(textColor[0], textColor[1], textColor[2]);
   doc.text(`Subnet Allocate: ${subnets.length}`, 14, 45);
 
   // Subnets Table

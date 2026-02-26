@@ -8,8 +8,13 @@ import { SubnetVisualizer } from '@/components/SubnetVisualizer';
 import { IPv6SubnetCalculator } from '@/components/IPv6SubnetCalculator';
 import { IPv6VLSMCalculator } from '@/components/IPv6VLSMCalculator';
 import { IPv6SubnetVisualizer } from '@/components/IPv6SubnetVisualizer';
-import { GuideModal } from '@/components/GuideModal';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import dynamic from 'next/dynamic';
+
+const GuideModal = dynamic(() => import('@/components/GuideModal').then(mod => ({ default: mod.GuideModal })), {
+  ssr: false,
+  loading: () => <span className="h-9 w-16" />,
+});
 
 export default function Home() {
   return (
@@ -33,7 +38,7 @@ export default function Home() {
               <ThemeToggle />
               <GuideModal />
               <a
-                href="https://github.com"
+                href="https://github.com/carellonicolo/Subnet"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -143,14 +148,14 @@ export default function Home() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
             <p>
-              © 2024 Subnet Calculator. Powered By Prof. Carello Nicolò
+              © 2024-2026 Subnet Calculator. Powered By Prof. Carello Nicolò
             </p>
             <div className="flex items-center gap-4">
-              <a href="#" className="hover:text-foreground transition-colors">
-                Documentazione
+              <a href="https://github.com/carellonicolo/Subnet" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
+                Repository
               </a>
               <span>•</span>
-              <a href="#" className="hover:text-foreground transition-colors">
+              <a href="https://github.com/carellonicolo/Subnet/issues" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
                 Feedback
               </a>
             </div>

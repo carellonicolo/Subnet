@@ -61,7 +61,7 @@ export function isValidCIDR(cidr: number): boolean {
  */
 export function ipToInt(ip: string): number {
   const octets = ip.split('.').map(Number);
-  return (octets[0] << 24) + (octets[1] << 16) + (octets[2] << 8) + octets[3];
+  return ((octets[0] << 24) >>> 0) + (octets[1] << 16) + (octets[2] << 8) + octets[3];
 }
 
 /**
@@ -98,7 +98,12 @@ export function cidrToSubnetMask(cidr: number): string {
  */
 export function subnetMaskToCIDR(mask: string): number {
   const binary = ipToBinary(mask).replace(/\./g, '');
-  return binary.split('1').length - 1;
+  // Validate contiguous mask: all 1s followed by all 0s
+  const firstZero = binary.indexOf('0');
+  if (firstZero === -1) return 32; // All 1s
+  const onesAfterZero = binary.substring(firstZero).indexOf('1');
+  if (onesAfterZero !== -1) return -1; // Invalid non-contiguous mask
+  return firstZero;
 }
 
 /**
@@ -351,4 +356,39 @@ export function generateSubnets(
   }
 
   return subnets;
+}
+
+/**
+ * Checks for overlapping subnets in a VLSM allocation
+ * Returns an array of overlapping pairs with details
+ */
+export interface OverlapInfo {
+  subnet1: string;
+  subnet2: string;
+  description: string;
+}
+
+export function checkVLSMOverlap(subnets: VLSMSubnet[]): OverlapInfo[] {
+  const overlaps: OverlapInfo[] = [];
+
+  for (let i = 0; i < subnets.length; i++) {
+    const startA = ipToInt(subnets[i].networkAddress);
+    const endA = ipToInt(subnets[i].broadcastAddress);
+
+    for (let j = i + 1; j < subnets.length; j++) {
+      const startB = ipToInt(subnets[j].networkAddress);
+      const endB = ipToInt(subnets[j].broadcastAddress);
+
+      // Check if ranges overlap
+      if (startA <= endB && startB <= endA) {
+        overlaps.push({
+          subnet1: subnets[i].name,
+          subnet2: subnets[j].name,
+          description: `${subnets[i].networkAddress}/${subnets[i].cidr} si sovrappone con ${subnets[j].networkAddress}/${subnets[j].cidr}`,
+        });
+      }
+    }
+  }
+
+  return overlaps;
 }

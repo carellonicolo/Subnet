@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Calculator, Info, FileDown } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Calculator, Info, FileDown, Copy, Check } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,8 +22,11 @@ export function SubnetCalculator() {
   const [cidr, setCidr] = useState('24');
   const [result, setResult] = useState<SubnetInfo | null>(null);
   const [error, setError] = useState('');
+  const [ipError, setIpError] = useState(false);
+  const [cidrError, setCidrError] = useState(false);
+  const [copied, setCopied] = useState<string | null>(null);
 
-  const handleCalculate = () => {
+  const handleCalculate = useCallback(() => {
     setError('');
     const cidrNum = parseInt(cidr);
 
@@ -45,12 +48,37 @@ export function SubnetCalculator() {
     }
 
     setResult(subnetResult);
-  };
+  }, [ipAddress, cidr]);
 
   // Auto-calculate on mount
-  useState(() => {
+  useEffect(() => {
     handleCalculate();
-  });
+  }, [handleCalculate]);
+
+  // Real-time validation
+  const validateIP = (value: string) => {
+    setIpAddress(value);
+    if (value && !/^(\d{1,3}\.){3}\d{1,3}$/.test(value)) {
+      setIpError(true);
+    } else if (value) {
+      const valid = value.split('.').every(o => { const n = parseInt(o); return n >= 0 && n <= 255; });
+      setIpError(!valid);
+    } else {
+      setIpError(false);
+    }
+  };
+
+  const validateCIDR = (value: string) => {
+    setCidr(value);
+    const num = parseInt(value);
+    setCidrError(value !== '' && (isNaN(num) || num < 0 || num > 32));
+  };
+
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(label);
+    setTimeout(() => setCopied(null), 1500);
+  };
 
   return (
     <div className="space-y-6">
@@ -72,8 +100,9 @@ export function SubnetCalculator() {
                 id="ip"
                 placeholder="192.168.1.100"
                 value={ipAddress}
-                onChange={(e) => setIpAddress(e.target.value)}
+                onChange={(e) => validateIP(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleCalculate()}
+                className={ipError ? 'border-red-500 focus-visible:ring-red-500' : ''}
               />
             </div>
             <div className="space-y-2">
@@ -89,9 +118,9 @@ export function SubnetCalculator() {
                   max="32"
                   placeholder="24"
                   value={cidr}
-                  onChange={(e) => setCidr(e.target.value)}
+                  onChange={(e) => validateCIDR(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleCalculate()}
-                  className="flex-1"
+                  className={`flex-1 ${cidrError ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
                 />
               </div>
             </div>
@@ -129,8 +158,13 @@ export function SubnetCalculator() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="space-y-1">
                   <div className="text-sm text-muted-foreground">Indirizzo IP</div>
-                  <div className="font-mono font-medium">{result.ipAddress}</div>
-                  <div className="text-xs text-muted-foreground font-mono">
+                  <div className="flex items-center gap-1">
+                    <span className="font-mono font-medium">{result.ipAddress}</span>
+                    <button onClick={() => copyToClipboard(result.ipAddress, 'ip')} className="p-1 rounded hover:bg-muted transition-colors">
+                      {copied === 'ip' ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3 text-muted-foreground" />}
+                    </button>
+                  </div>
+                  <div className="text-xs text-muted-foreground font-mono hidden md:block">
                     {result.binary}
                   </div>
                 </div>
@@ -148,11 +182,10 @@ export function SubnetCalculator() {
                 <div className="space-y-1">
                   <div className="text-sm text-muted-foreground">Tipo IP</div>
                   <div className="font-medium">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      result.ipType === 'Private' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' :
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${result.ipType === 'Private' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' :
                       result.ipType === 'Public' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' :
-                      'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
-                    }`}>
+                        'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
+                      }`}>
                       {result.ipType}
                     </span>
                   </div>
@@ -182,39 +215,53 @@ export function SubnetCalculator() {
                   <TableRow>
                     <TableHead className="w-[200px]">Parametro</TableHead>
                     <TableHead>Decimale</TableHead>
-                    <TableHead>Binario</TableHead>
+                    <TableHead className="hidden md:table-cell">Binario</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   <TableRow>
                     <TableCell className="font-medium">Subnet Mask</TableCell>
                     <TableCell className="font-mono">{result.subnetMask}</TableCell>
-                    <TableCell className="font-mono text-xs">{result.subnetMaskBinary}</TableCell>
+                    <TableCell className="font-mono text-xs hidden md:table-cell">{result.subnetMaskBinary}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Wildcard Mask</TableCell>
                     <TableCell className="font-mono">{result.wildcardMask}</TableCell>
-                    <TableCell className="font-mono text-xs">-</TableCell>
+                    <TableCell className="font-mono text-xs hidden md:table-cell">-</TableCell>
                   </TableRow>
                   <TableRow className="bg-muted/50">
                     <TableCell className="font-medium">Network Address</TableCell>
-                    <TableCell className="font-mono font-semibold">{result.networkAddress}</TableCell>
-                    <TableCell className="font-mono text-xs">{result.networkAddressBinary}</TableCell>
+                    <TableCell className="font-mono font-semibold">
+                      <div className="flex items-center gap-1">
+                        {result.networkAddress}
+                        <button onClick={() => copyToClipboard(result.networkAddress, 'net')} className="p-1 rounded hover:bg-muted transition-colors">
+                          {copied === 'net' ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3 text-muted-foreground" />}
+                        </button>
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-mono text-xs hidden md:table-cell">{result.networkAddressBinary}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Primo IP Utilizzabile</TableCell>
                     <TableCell className="font-mono">{result.firstUsableIP}</TableCell>
-                    <TableCell className="font-mono text-xs">-</TableCell>
+                    <TableCell className="font-mono text-xs hidden md:table-cell">-</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="font-medium">Ultimo IP Utilizzabile</TableCell>
                     <TableCell className="font-mono">{result.lastUsableIP}</TableCell>
-                    <TableCell className="font-mono text-xs">-</TableCell>
+                    <TableCell className="font-mono text-xs hidden md:table-cell">-</TableCell>
                   </TableRow>
                   <TableRow className="bg-muted/50">
                     <TableCell className="font-medium">Broadcast Address</TableCell>
-                    <TableCell className="font-mono font-semibold">{result.broadcastAddress}</TableCell>
-                    <TableCell className="font-mono text-xs">{result.broadcastAddressBinary}</TableCell>
+                    <TableCell className="font-mono font-semibold">
+                      <div className="flex items-center gap-1">
+                        {result.broadcastAddress}
+                        <button onClick={() => copyToClipboard(result.broadcastAddress, 'bcast')} className="p-1 rounded hover:bg-muted transition-colors">
+                          {copied === 'bcast' ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3 text-muted-foreground" />}
+                        </button>
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-mono text-xs hidden md:table-cell">{result.broadcastAddressBinary}</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
