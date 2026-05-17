@@ -22,6 +22,11 @@ const ExercisesModal = dynamic(() => import('@/components/ExercisesModal').then(
   loading: () => <span className="h-9 w-16" />,
 });
 
+const ConverterModal = dynamic(() => import('@/components/ConverterModal').then(mod => ({ default: mod.ConverterModal })), {
+  ssr: false,
+  loading: () => <span className="h-9 w-16" />,
+});
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
@@ -42,6 +47,7 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-2">
               <ThemeToggle />
+              <ConverterModal />
               <GuideModal />
               <ExercisesModal />
               <a
@@ -161,19 +167,10 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t bg-white/80 backdrop-blur-sm dark:bg-slate-900/80 mt-16">
         <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
+          <div className="flex justify-center items-center gap-4 text-sm text-muted-foreground text-center">
             <p>
               © 2024-2026 Subnet Calculator. Powered By Prof. Carello Nicolò
             </p>
-            <div className="flex items-center gap-4">
-              <a href="https://github.com/carellonicolo/Subnet" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
-                Repository
-              </a>
-              <span>•</span>
-              <a href="https://github.com/carellonicolo/Subnet/issues" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
-                Feedback
-              </a>
-            </div>
           </div>
         </div>
       </footer>
