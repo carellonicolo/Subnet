@@ -16,6 +16,11 @@ const GuideModal = dynamic(() => import('@/components/GuideModal').then(mod => (
   loading: () => <span className="h-9 w-16" />,
 });
 
+const ExercisesModal = dynamic(() => import('@/components/ExercisesModal').then(mod => ({ default: mod.ExercisesModal })), {
+  ssr: false,
+  loading: () => <span className="h-9 w-16" />,
+});
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
@@ -37,6 +42,7 @@ export default function Home() {
             <div className="flex items-center gap-2">
               <ThemeToggle />
               <GuideModal />
+              <ExercisesModal />
               <a
                 href="https://github.com/carellonicolo/Subnet"
                 target="_blank"

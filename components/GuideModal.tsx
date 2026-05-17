@@ -42,42 +42,49 @@ export function GuideModal() {
 
           {/* IPv4 SECTION */}
           <TabsContent value="ipv4" className="space-y-6 py-4">
-            {/* Sezione 1: Cos'è un indirizzo IP */}
+            {/* Sezione 1: Storia dell'Indirizzamento IP */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Network className="h-5 w-5 text-primary" />
-                  1. Cos&apos;è un Indirizzo IP?
+                  <BookOpen className="h-5 w-5 text-primary" />
+                  1. La Storia dell&apos;Indirizzamento IP
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-sm">
-                  Un <strong>indirizzo IP (Internet Protocol)</strong> è come l&apos;indirizzo di casa del tuo computer su internet o su una rete locale.
-                  Permette ai dispositivi di comunicare tra loro.
+              <CardContent className="space-y-4 text-sm">
+                <p>
+                  L&apos;indirizzamento IP ha radici profonde nella storia di Internet. All&apos;inizio degli anni &apos;70, con lo sviluppo di <strong>ARPANET</strong> (il precursore di Internet), si rese necessario un sistema standardizzato per far comunicare computer di reti diverse.
                 </p>
-
-                <div className="bg-muted p-4 rounded-lg space-y-2">
-                  <p className="text-sm font-semibold">Esempio pratico:</p>
-                  <p className="text-sm font-mono">192.168.1.100</p>
-                  <p className="text-xs text-muted-foreground">
-                    Questo indirizzo è composto da 4 numeri (chiamati <strong>ottetti</strong>) separati da punti.
-                    Ogni numero può andare da 0 a 255.
+                
+                <div className="bg-muted p-4 rounded-lg space-y-3">
+                  <h4 className="font-semibold">La Nascita di IPv4 (1981)</h4>
+                  <p>
+                    Nel 1981 venne pubblicato il documento ufficiale (RFC 791) che definiva l&apos;<strong>Internet Protocol version 4 (IPv4)</strong>. Venne stabilito che gli indirizzi sarebbero stati lunghi 32 bit, permettendo teoricamente circa <strong>4,3 miliardi di indirizzi unici</strong>. All&apos;epoca, quando i computer erano macchinari giganteschi e costosi, 4 miliardi sembravano un numero infinito!
                   </p>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="border rounded-lg p-4">
-                    <h4 className="font-semibold text-sm mb-2">📍 IP Pubblico</h4>
-                    <p className="text-xs text-muted-foreground">
-                      Visibile su internet (es. 8.8.8.8 - Google DNS)
-                    </p>
-                  </div>
-                  <div className="border rounded-lg p-4">
-                    <h4 className="font-semibold text-sm mb-2">🏠 IP Privato</h4>
-                    <p className="text-xs text-muted-foreground">
-                      Usato solo nella tua rete locale (es. 192.168.1.x)
-                    </p>
-                  </div>
+                <div className="space-y-2">
+                  <h4 className="font-semibold">L&apos;Era delle Classi (Classful Addressing)</h4>
+                  <p>
+                    Inizialmente, lo spazio degli indirizzi IP fu rigidamente diviso in &quot;Classi&quot; predefinite. Questo sistema assegnava i blocchi di indirizzi in modo fisso:
+                  </p>
+                  <ul className="list-disc list-inside space-y-1 ml-2 text-muted-foreground">
+                    <li><strong>Classe A:</strong> Per governi e multinazionali (16 milioni di host per rete).</li>
+                    <li><strong>Classe B:</strong> Per grandi aziende e università (65.000 host per rete).</li>
+                    <li><strong>Classe C:</strong> Per piccole reti (254 host per rete).</li>
+                  </ul>
+                  <p className="mt-2 text-red-600 dark:text-red-400 font-medium">
+                    Il problema? Uno spreco enorme! Se un&apos;azienda aveva 300 computer, una Classe C (254) era troppo piccola, ma una Classe B (65.000) era inutilmente gigantesca, sprecando decine di migliaia di indirizzi IP preziosi.
+                  </p>
+                </div>
+
+                <div className="bg-primary/5 border border-primary/20 p-4 rounded-lg space-y-2">
+                  <h4 className="font-semibold">L&apos;Esaurimento e la Soluzione: Il CIDR</h4>
+                  <p>
+                    Nei primi anni &apos;90, con il boom del World Wide Web, divenne chiaro che gli indirizzi IPv4 si sarebbero esauriti molto prima del previsto. Per ritardare l&apos;esaurimento (in attesa di IPv6), nel 1993 fu introdotto il <strong>CIDR (Classless Inter-Domain Routing)</strong>. 
+                  </p>
+                  <p>
+                    Il CIDR eliminò le vecchie &quot;Classi&quot; rigide, permettendo di ritagliare reti <em>su misura</em> per le reali necessità delle aziende, usando le <strong>Subnet Mask</strong> per definire i confini delle reti in modo flessibile.
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -87,45 +94,44 @@ export function GuideModal() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Binary className="h-5 w-5 text-primary" />
-                  2. Il Sistema Binario - La Base di Tutto
+                  2. Nozioni sull&apos;Indirizzamento: Il Sistema Binario
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm">
-                  I computer &quot;pensano&quot; in <strong>binario</strong>: solo 0 e 1. Un indirizzo IP,
-                  anche se lo vediamo come numeri decimali, è in realtà una sequenza di 32 bit (0 o 1).
+                  I computer &quot;pensano&quot; in <strong>binario</strong>: solo 0 e 1. Tutte le nozioni di rete, anche se le leggiamo con numeri decimali, sono basate su sequenze di bit.
                 </p>
 
                 <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 space-y-3">
-                  <p className="text-sm font-semibold">Conversione Decimale → Binario:</p>
+                  <p className="text-sm font-semibold">Conversione Decimale → Binario (per l&apos;IP 192.168.1.100):</p>
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm font-mono bg-background p-2 rounded">
-                      <span>192 (decimale)</span>
+                      <span>192</span>
                       <span>→</span>
-                      <span>11000000 (binario)</span>
+                      <span>11000000</span>
                     </div>
                     <div className="flex items-center justify-between text-sm font-mono bg-background p-2 rounded">
-                      <span>168 (decimale)</span>
+                      <span>168</span>
                       <span>→</span>
-                      <span>10101000 (binario)</span>
+                      <span>10101000</span>
                     </div>
                     <div className="flex items-center justify-between text-sm font-mono bg-background p-2 rounded">
-                      <span>1 (decimale)</span>
+                      <span>1</span>
                       <span>→</span>
-                      <span>00000001 (binario)</span>
+                      <span>00000001</span>
                     </div>
                     <div className="flex items-center justify-between text-sm font-mono bg-background p-2 rounded">
-                      <span>100 (decimale)</span>
+                      <span>100</span>
                       <span>→</span>
-                      <span>01100100 (binario)</span>
+                      <span>01100100</span>
                     </div>
                   </div>
 
                   <Separator />
 
                   <div className="text-sm font-mono bg-background p-3 rounded">
-                    <div className="text-xs text-muted-foreground mb-1">IP completo in binario:</div>
+                    <div className="text-xs text-muted-foreground mb-1">L&apos;indirizzo in forma binaria completa:</div>
                     <div className="break-all">11000000.10101000.00000001.01100100</div>
                     <div className="text-xs text-muted-foreground mt-2">
                       ↑ Sono esattamente 32 bit (4 ottetti × 8 bit)
@@ -135,7 +141,7 @@ export function GuideModal() {
 
                 <div className="bg-muted p-3 rounded-lg">
                   <p className="text-xs">
-                    <strong>💡 Tip:</strong> Ogni ottetto è di 8 bit. 2^8 = 256, ecco perché ogni numero va da 0 a 255!
+                    <strong>💡 Tip:</strong> Ogni ottetto è di 8 bit. Un numero a 8 bit può avere 2^8 (cioè 256) combinazioni. Ecco perché ogni numero di un IP va da 0 a 255!
                   </p>
                 </div>
               </CardContent>
@@ -146,31 +152,31 @@ export function GuideModal() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Calculator className="h-5 w-5 text-primary" />
-                  3. Cos&apos;è una Subnet Mask?
+                  3. Nozioni sull&apos;Indirizzamento: La Subnet Mask
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm">
-                  La <strong>subnet mask</strong> divide l&apos;indirizzo IP in due parti:
+                  Ora che sappiamo che tutto è in binario, introduciamo la <strong>Subnet Mask</strong> (Maschera di Sottorete). Essa funge da &quot;filtro&quot; per dividere i 32 bit in due parti distinte:
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="bg-blue-50 dark:bg-blue-950 border-2 border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                    <h4 className="font-semibold text-sm mb-2">🌐 Parte Rete</h4>
+                    <h4 className="font-semibold text-sm mb-2">🌐 Parte Rete (I bit a &quot;1&quot;)</h4>
                     <p className="text-xs">
-                      Identifica quale rete (come il CAP di una città)
+                      Identifica la tua strada (o il CAP). Tutti i computer della stessa rete locale devono avere questa parte perfettamente identica.
                     </p>
                   </div>
                   <div className="bg-green-50 dark:bg-green-950 border-2 border-green-200 dark:border-green-800 rounded-lg p-4">
-                    <h4 className="font-semibold text-sm mb-2">🏠 Parte Host</h4>
+                    <h4 className="font-semibold text-sm mb-2">🏠 Parte Host (I bit a &quot;0&quot;)</h4>
                     <p className="text-xs">
-                      Identifica il dispositivo specifico (come il numero civico)
+                      Identifica il numero civico specifico di un dispositivo all&apos;interno di quella strada. Deve essere unico per ogni computer.
                     </p>
                   </div>
                 </div>
 
                 <div className="bg-muted p-4 rounded-lg space-y-3">
-                  <p className="text-sm font-semibold">Esempio Visivo:</p>
+                  <p className="text-sm font-semibold">Esempio Visivo in Decimale:</p>
 
                   <div className="space-y-2 text-sm font-mono">
                     <div className="bg-background p-3 rounded">
@@ -185,54 +191,104 @@ export function GuideModal() {
                   </div>
 
                   <div className="text-xs bg-primary/10 p-3 rounded">
-                    <p className="mb-2"><strong>Come funziona:</strong></p>
+                    <p className="mb-2"><strong>La Logica della Maschera:</strong></p>
                     <ul className="space-y-1 list-disc list-inside">
-                      <li><span className="text-blue-600">255 = parte di rete</span> (i primi 24 bit sono &quot;bloccati&quot;)</li>
-                      <li><span className="text-green-600">0 = parte host</span> (gli ultimi 8 bit sono &quot;liberi&quot; per i dispositivi)</li>
+                      <li>I 255 (tutti &quot;1&quot; in binario) &quot;bloccano&quot; i numeri: il <span className="text-blue-600">192.168.1</span> è la base fissa della rete.</li>
+                      <li>Lo 0 (tutti &quot;0&quot; in binario) lascia libero l&apos;ultimo blocco: i numeri da 1 a 254 possono essere assegnati ai vari PC (<span className="text-green-600">100</span> in questo caso).</li>
                     </ul>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Sezione 4: Notazione CIDR */}
+            {/* Sezione 4: Cos'è un indirizzo IP */}
             <Card>
               <CardHeader>
-                <CardTitle>4. Notazione CIDR (la via veloce!)</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Network className="h-5 w-5 text-primary" />
+                  4. Il Protocollo IP (Cos&apos;è un Indirizzo IP?)
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm">
-                  Invece di scrivere <code className="bg-muted px-2 py-1 rounded">255.255.255.0</code>, possiamo usare <code className="bg-muted px-2 py-1 rounded">/24</code>
+                  Alla luce di quanto appena visto sulla natura binaria e sulle subnet mask, possiamo definire formalmente cosa sia un <strong>Indirizzo IP (Internet Protocol)</strong>.
+                </p>
+                <p className="text-sm">
+                  È l&apos;identificativo numerico fondamentale (composto da 32 bit in IPv4) che assegna una posizione logica univoca a qualsiasi dispositivo connesso a una rete informatica. Permette ai router di sapere dove spedire i &quot;pacchetti&quot; di dati.
                 </p>
 
+                <div className="grid md:grid-cols-2 gap-4 mt-4">
+                  <div className="border rounded-lg p-4">
+                    <h4 className="font-semibold text-sm mb-2">📍 IP Pubblico</h4>
+                    <p className="text-xs text-muted-foreground">
+                      Un indirizzo univoco in <strong>tutto il mondo</strong>. I router di internet lo usano per recapitare i dati a casa tua o ai grandi server (es. 8.8.8.8 è un server di Google).
+                    </p>
+                  </div>
+                  <div className="border rounded-lg p-4">
+                    <h4 className="font-semibold text-sm mb-2">🏠 IP Privato</h4>
+                    <p className="text-xs text-muted-foreground">
+                      Un indirizzo valido <strong>solo all&apos;interno</strong> della tua rete locale (es. 192.168.1.100). Viene nascosto a internet tramite un processo chiamato NAT (Network Address Translation).
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Sezione 5: Notazione CIDR */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BookOpen className="h-5 w-5 text-primary" />
+                  5. Notazione CIDR (Classless Inter-Domain Routing)
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="bg-primary/5 p-4 rounded-lg border border-primary/20">
+                  <p className="text-sm font-medium mb-2">Perché scriverla lunga quando si può abbreviare?</p>
+                  <p className="text-sm">
+                    Come accennato nella storia, il CIDR è nato per slegare le reti dai vecchi confini fissi delle classi. Ma il CIDR ha portato anche un immenso vantaggio pratico: un nuovo modo, conciso ed elegante, per comunicare la Subnet Mask, chiamato <strong>notazione Slash</strong> (o notazione a prefisso).
+                  </p>
+                </div>
+
+                <div className="space-y-3 text-sm">
+                  <p>
+                    Invece di scrivere laboriosamente la maschera per esteso (<code className="bg-muted px-1.5 py-0.5 rounded">255.255.255.0</code>), si conta semplicemente <strong>il numero di bit a &quot;1&quot;</strong> presenti nella maschera (da sinistra verso destra). 
+                  </p>
+                  <p>
+                    Visto che 255 in binario corrisponde a otto bit &quot;1&quot; (11111111), la maschera 255.255.255.0 è formata da 8 + 8 + 8 = 24 bit a &quot;1&quot;. Quindi la si può indicare semplicemente scrivendo <strong>/24</strong> alla fine dell&apos;indirizzo IP.
+                  </p>
+                </div>
+
                 <div className="bg-muted p-4 rounded-lg">
-                  <p className="text-sm font-semibold mb-3">Equivalenze comuni:</p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm font-mono">
-                    <div className="flex justify-between bg-background p-2 rounded">
-                      <span>/24</span>
-                      <span className="text-muted-foreground">=</span>
-                      <span>255.255.255.0</span>
+                  <p className="text-sm font-semibold mb-3">La Matematica Dietro al CIDR:</p>
+                  <div className="space-y-3">
+                    <div className="text-sm font-mono bg-background p-3 rounded">
+                      <div className="text-xs text-muted-foreground mb-1">Esempio con /24:</div>
+                      <div>Bit a 1:  <span className="text-blue-600">11111111.11111111.11111111</span>.<span className="text-green-600">00000000</span></div>
+                      <div>Decimale: <span className="text-blue-600">255     .255     .255</span>     .<span className="text-green-600">0</span></div>
                     </div>
-                    <div className="flex justify-between bg-background p-2 rounded">
-                      <span>/16</span>
-                      <span className="text-muted-foreground">=</span>
-                      <span>255.255.0.0</span>
-                    </div>
-                    <div className="flex justify-between bg-background p-2 rounded">
-                      <span>/8</span>
-                      <span className="text-muted-foreground">=</span>
-                      <span>255.0.0.0</span>
-                    </div>
-                    <div className="flex justify-between bg-background p-2 rounded">
-                      <span>/32</span>
-                      <span className="text-muted-foreground">=</span>
-                      <span>255.255.255.255</span>
+                    <div className="text-sm font-mono bg-background p-3 rounded">
+                      <div className="text-xs text-muted-foreground mb-1">Esempio con /26:</div>
+                      <div>Bit a 1:  <span className="text-blue-600">11111111.11111111.11111111.11</span><span className="text-green-600">000000</span></div>
+                      <div>Decimale: <span className="text-blue-600">255     .255     .255     .192</span></div>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-primary/5 border border-primary/20 p-4 rounded-lg">
-                  <p className="text-sm font-semibold mb-2">📊 Tabella di Riferimento CIDR:</p>
+                <div className="space-y-2 text-sm mt-4">
+                  <h4 className="font-semibold">I Superpoteri del CIDR: La Flessibilità</h4>
+                  <p>
+                    Oltre ad accorciare la scrittura, la notazione CIDR esprime una granularità pazzesca:
+                  </p>
+                  <ul className="list-disc list-inside space-y-1 ml-2">
+                    <li>Un <strong>/24</strong> lascia 8 bit per gli host (2^8 = 256 IP, 254 utilizzabili).</li>
+                    <li>Aggiungendo un solo bit alla rete (<strong>/25</strong>), si dimezzano gli host disponibili (2^7 = 128 IP, 126 utilizzabili).</li>
+                    <li>Sottraendo un bit alla rete (<strong>/23</strong>), si raddoppiano gli host disponibili (2^9 = 512 IP, 510 utilizzabili). Questa tecnica è nota anche come <strong>Supernetting</strong> o Route Summarization, ed è essenziale nei router di Internet per snellire le enormi tabelle di routing.</li>
+                  </ul>
+                </div>
+
+                <div className="bg-primary/5 border border-primary/20 p-4 rounded-lg mt-4">
+                  <p className="text-sm font-semibold mb-2">📊 Tabella di Riferimento Rapido CIDR:</p>
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs">
                       <thead className="bg-muted">
@@ -245,16 +301,22 @@ export function GuideModal() {
                       </thead>
                       <tbody className="font-mono">
                         <tr className="border-t">
+                          <td className="p-2">/23</td>
+                          <td className="p-2">255.255.254.0</td>
+                          <td className="p-2">510</td>
+                          <td className="p-2 font-sans">Scuole / Aziende Medie</td>
+                        </tr>
+                        <tr className="border-t">
                           <td className="p-2">/24</td>
                           <td className="p-2">255.255.255.0</td>
                           <td className="p-2">254</td>
-                          <td className="p-2 font-sans">Rete piccola/media</td>
+                          <td className="p-2 font-sans">Rete piccola/domestica</td>
                         </tr>
                         <tr className="border-t">
                           <td className="p-2">/25</td>
                           <td className="p-2">255.255.255.128</td>
                           <td className="p-2">126</td>
-                          <td className="p-2 font-sans">Subnet media</td>
+                          <td className="p-2 font-sans">Suddivisione in due (Subnet)</td>
                         </tr>
                         <tr className="border-t">
                           <td className="p-2">/26</td>
@@ -269,16 +331,10 @@ export function GuideModal() {
                           <td className="p-2 font-sans">Team/Dipartimento</td>
                         </tr>
                         <tr className="border-t">
-                          <td className="p-2">/28</td>
-                          <td className="p-2">255.255.255.240</td>
-                          <td className="p-2">14</td>
-                          <td className="p-2 font-sans">Gruppo piccolo</td>
-                        </tr>
-                        <tr className="border-t">
                           <td className="p-2">/30</td>
                           <td className="p-2">255.255.255.252</td>
                           <td className="p-2">2</td>
-                          <td className="p-2 font-sans">Link punto-a-punto</td>
+                          <td className="p-2 font-sans">Link punto-a-punto router</td>
                         </tr>
                       </tbody>
                     </table>
@@ -287,12 +343,12 @@ export function GuideModal() {
               </CardContent>
             </Card>
 
-            {/* Sezione 5: Esempio Pratico */}
+            {/* Sezione 6: Esempio Pratico */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Lightbulb className="h-5 w-5 text-primary" />
-                  5. Esempio Pratico Passo-Passo
+                  6. Esempio Pratico Passo-Passo
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -345,10 +401,10 @@ export function GuideModal() {
               </CardContent>
             </Card>
 
-            {/* Sezione 6: Come Calcolare Manualmente */}
+            {/* Sezione 7: Come Calcolare Manualmente */}
             <Card>
               <CardHeader>
-                <CardTitle>6. Come Calcolare Subnet Manualmente (Metodo Rapido)</CardTitle>
+                <CardTitle>7. Come Calcolare Subnet Manualmente (Metodo Rapido)</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm">Impara a calcolare subnet con carta e penna! Ecco un metodo semplice:</p>
@@ -406,10 +462,10 @@ export function GuideModal() {
               </CardContent>
             </Card>
 
-            {/* Sezione 7: Errori Comuni */}
+            {/* Sezione 8: Errori Comuni */}
             <Card>
               <CardHeader>
-                <CardTitle>7. Errori Comuni da Evitare</CardTitle>
+                <CardTitle>8. Errori Comuni da Evitare</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -423,14 +479,14 @@ export function GuideModal() {
                   <div className="border-l-4 border-red-500 pl-4 py-2">
                     <p className="text-sm font-semibold">❌ Confondere CIDR più grande = più host</p>
                     <p className="text-xs text-muted-foreground">
-                      Al contrario! /24 ha PIÙ host di /28. Più grande il numero CIDR, più piccola la rete.
+                      Al contrario! /24 ha PIÙ host di /28. Più grande il numero CIDR, più piccola la rete, perché significa che più bit sono &quot;bloccati&quot; per la rete.
                     </p>
                   </div>
 
                   <div className="border-l-4 border-red-500 pl-4 py-2">
-                    <p className="text-sm font-semibold">❌ Usare .0 o .255 come IP host</p>
+                    <p className="text-sm font-semibold">❌ Usare .0 o .255 come IP host (in una /24)</p>
                     <p className="text-xs text-muted-foreground">
-                      In una /24, 192.168.1.0 è network e 192.168.1.255 è broadcast - non assegnabili!
+                      In una /24, 192.168.1.0 è network e 192.168.1.255 è broadcast - non assegnabili a un PC!
                     </p>
                   </div>
 
@@ -444,10 +500,10 @@ export function GuideModal() {
               </CardContent>
             </Card>
 
-            {/* Sezione 8: Casi d'Uso Reali */}
+            {/* Sezione 9: Casi d'Uso Reali */}
             <Card>
               <CardHeader>
-                <CardTitle>8. Casi d&apos;Uso nel Mondo Reale</CardTitle>
+                <CardTitle>9. Casi d&apos;Uso nel Mondo Reale</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -476,25 +532,25 @@ export function GuideModal() {
                     <p className="text-sm font-semibold mb-2">🔗 Link Punto-a-Punto</p>
                     <div className="text-xs">
                       <p><strong>Router-to-Router:</strong> 10.0.0.0/30</p>
-                      <p className="mt-1">Solo 2 IP utilizzabili - ideale per collegare due router!</p>
+                      <p className="mt-1">Solo 2 IP utilizzabili - ideale per collegare due router sprecando zero IP!</p>
                     </div>
                   </div>
 
                   <div className="bg-muted p-4 rounded-lg">
                     <p className="text-sm font-semibold mb-2">☁️ Cloud/Server Farm</p>
                     <div className="text-xs">
-                      <p><strong>Tipico:</strong> 10.0.0.0/16 suddiviso in /24 per servizio</p>
-                      <p className="mt-1">Permette 256 subnet da 254 host ciascuna - massima flessibilità!</p>
+                      <p><strong>Tipico:</strong> 10.0.0.0/16 suddiviso in reti /24 per ciascun servizio</p>
+                      <p className="mt-1">Permette 256 subnet da 254 host ciascuna - massima flessibilità per architetture complesse.</p>
                     </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Sezione 9: Tips & Tricks */}
+            {/* Sezione 10: Tips & Tricks */}
             <Card className="border-primary/20 bg-primary/5">
               <CardHeader>
-                <CardTitle>💡 Tips & Tricks per Imparare</CardTitle>
+                <CardTitle>💡 10. Tips & Tricks per Imparare</CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-3 text-sm">
@@ -504,58 +560,54 @@ export function GuideModal() {
                   </li>
                   <li className="flex gap-2">
                     <span className="text-primary">✓</span>
-                    <span><strong>Usa questo tool:</strong> Prova diversi IP e CIDR per vedere i risultati</span>
+                    <span><strong>Usa questo tool:</strong> Prova diversi IP e CIDR per vedere i risultati in tempo reale</span>
                   </li>
                   <li className="flex gap-2">
                     <span className="text-primary">✓</span>
-                    <span><strong>Parti da /24:</strong> È il più comune e facile da capire</span>
+                    <span><strong>Parti da /24:</strong> È la subnet più comune e la più facile da visualizzare mentalmente.</span>
                   </li>
                   <li className="flex gap-2">
                     <span className="text-primary">✓</span>
-                    <span><strong>Ricorda:</strong> Più grande il CIDR (es. /30), meno host disponibili</span>
+                    <span><strong>Ricorda la regola inversa:</strong> Più grande è il CIDR (es. /30), meno host sono disponibili.</span>
                   </li>
                   <li className="flex gap-2">
                     <span className="text-primary">✓</span>
-                    <span><strong>Pratica:</strong> Fai esercizi con carta e penna per assimilare i concetti</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-primary">✓</span>
-                    <span><strong>Visualizza:</strong> Usa il Subnet Visualizer per vedere le divisioni</span>
+                    <span><strong>Pratica:</strong> Fai esercizi con carta e penna, e usa la scheda &quot;Esercizi&quot; in alto per metterti alla prova!</span>
                   </li>
                 </ul>
               </CardContent>
             </Card>
 
-            {/* Sezione 10: Glossario */}
+            {/* Sezione 11: Glossario */}
             <Card>
               <CardHeader>
-                <CardTitle>📖 Glossario Rapido</CardTitle>
+                <CardTitle>📖 11. Glossario Rapido</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid md:grid-cols-2 gap-3 text-sm">
                   <div>
                     <strong>Network Address:</strong>
-                    <p className="text-xs text-muted-foreground">Il primo IP della rete, identifica la rete stessa</p>
+                    <p className="text-xs text-muted-foreground">Il primissimo IP della subnet. Identifica la rete stessa e non è assegnabile ai PC.</p>
                   </div>
                   <div>
                     <strong>Broadcast Address:</strong>
-                    <p className="text-xs text-muted-foreground">L&apos;ultimo IP, invia messaggi a tutti i dispositivi</p>
+                    <p className="text-xs text-muted-foreground">L&apos;ultimo IP della subnet. È l&apos;indirizzo usato per inviare un messaggio a *tutti* i dispositivi della rete contemporaneamente.</p>
                   </div>
                   <div>
                     <strong>Host:</strong>
-                    <p className="text-xs text-muted-foreground">Un dispositivo connesso alla rete (PC, stampante, etc.)</p>
+                    <p className="text-xs text-muted-foreground">Qualsiasi dispositivo finale connesso alla rete (PC, smartphone, stampante, Smart TV, ecc.) a cui è assegnato un IP univoco.</p>
                   </div>
                   <div>
                     <strong>Subnet:</strong>
-                    <p className="text-xs text-muted-foreground">Una sotto-rete, divisione di una rete più grande</p>
+                    <p className="text-xs text-muted-foreground">Una &quot;sottorete&quot;, ovvero una divisione logica di una rete IP più grande, per migliorare prestazioni e sicurezza.</p>
                   </div>
                   <div>
-                    <strong>Gateway:</strong>
-                    <p className="text-xs text-muted-foreground">Il router che connette la tua rete a internet</p>
+                    <strong>Gateway (Default Gateway):</strong>
+                    <p className="text-xs text-muted-foreground">L&apos;indirizzo IP del router interno alla rete, che funge da &quot;porta d&apos;uscita&quot; per raggiungere Internet (solitamente è il primo IP utilizzabile, es. .1).</p>
                   </div>
                   <div>
-                    <strong>VLSM:</strong>
-                    <p className="text-xs text-muted-foreground">Tecnica per creare subnet di dimensioni diverse</p>
+                    <strong>VLSM (Variable Length Subnet Mask):</strong>
+                    <p className="text-xs text-muted-foreground">Tecnica avanzata di subnetting che permette di dividere una rete in subnet di dimensioni *diverse* per evitare sprechi di indirizzi IP.</p>
                   </div>
                 </div>
               </CardContent>
