@@ -679,3 +679,110 @@ export function exportIPv6VLSMToPDF(
   const filename = networkIP.replace(/:/g, '_').replace(/\//g, '-');
   doc.save(`ipv6_vlsm_${filename}_${networkPrefix}.pdf`);
 }
+
+/**
+ * Export FLSM results to PDF
+ */
+export function exportFLSMToPDF(
+  networkIP: string,
+  originalCIDR: number,
+  newCIDR: number,
+  subnets: SubnetInfo[],
+  isDarkMode: boolean = false
+) {
+  const doc = new jsPDF();
+
+  // Theme colors
+  const bg = isDarkMode ? [30, 41, 59] : [255, 255, 255]; // slate-800 vs white
+  const textColor = isDarkMode ? [226, 232, 240] : [51, 51, 51]; // slate-200 vs dark
+  const headerBg = isDarkMode ? [51, 65, 85] : [59, 130, 246]; // slate-600 vs blue-500
+  const headerText = [255, 255, 255];
+  const altRowBg = isDarkMode ? [51, 65, 85] : [245, 247, 250];
+  const borderColor = isDarkMode ? [71, 85, 105] : [200, 200, 200];
+
+  doc.setFillColor(bg[0], bg[1], bg[2]);
+  doc.rect(0, 0, doc.internal.pageSize.width, doc.internal.pageSize.height, 'F');
+
+  // Title
+  doc.setFontSize(20);
+  doc.setTextColor(headerBg[0], headerBg[1], headerBg[2]);
+  doc.text('FLSM Calculator - Risultati', 14, 20);
+
+  // Subtitle
+  doc.setFontSize(10);
+  doc.setTextColor(textColor[0], textColor[1], textColor[2]);
+  doc.text(`Rete Originale: ${networkIP}/${originalCIDR} → Nuove Subnet: /${newCIDR}`, 14, 27);
+  doc.text(`Subnet Generate: ${subnets.length}`, 14, 32);
+  doc.text(`Generato il ${new Date().toLocaleString('it-IT')}`, 14, 37);
+
+  // Statistics
+  doc.setFontSize(12);
+  doc.setTextColor(textColor[0], textColor[1], textColor[2]);
+  doc.text('Statistiche', 14, 48);
+
+  doc.setFontSize(10);
+  doc.text(`• Host per subnet: ${subnets[0]?.usableHosts || 0}`, 20, 55);
+  doc.text(`• Indirizzi totali per subnet: ${subnets[0]?.totalHosts || 0}`, 20, 61);
+  doc.text(`• Subnet mask: ${subnets[0]?.subnetMask || '-'}`, 20, 67);
+
+  // Subnets Table
+  const tableData = subnets.map((subnet, index) => [
+    `${index + 1}`,
+    subnet.networkAddress,
+    `/${subnet.cidr}`,
+    subnet.firstUsableIP,
+    subnet.lastUsableIP,
+    subnet.broadcastAddress,
+    `${subnet.usableHosts}`,
+  ]);
+
+  autoTable(doc, {
+    startY: 75,
+    head: [['#', 'Network', 'CIDR', 'First IP', 'Last IP', 'Broadcast', 'Hosts']],
+    body: tableData,
+    theme: 'grid',
+    headStyles: {
+      fillColor: [headerBg[0], headerBg[1], headerBg[2]],
+      textColor: [headerText[0], headerText[1], headerText[2]],
+      fontSize: 9,
+      fontStyle: 'bold',
+      halign: 'center',
+    },
+    bodyStyles: {
+      fontSize: 8,
+      font: 'courier',
+    },
+    columnStyles: {
+      0: { halign: 'center', cellWidth: 10 },
+      2: { halign: 'center', cellWidth: 15 },
+      6: { halign: 'right', cellWidth: 15 },
+    },
+    alternateRowStyles: {
+      fillColor: [altRowBg[0], altRowBg[1], altRowBg[2]],
+    },
+    styles: {
+      textColor: [textColor[0], textColor[1], textColor[2]],
+      lineColor: [borderColor[0], borderColor[1], borderColor[2]],
+    },
+    margin: { left: 8, right: 8 },
+  });
+
+  // Footer
+  const pageCount = (doc as any).internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(8);
+    doc.setTextColor(textColor[0], textColor[1], textColor[2]);
+    doc.text(
+      `Pagina ${i} di ${pageCount}`,
+      doc.internal.pageSize.width / 2,
+      doc.internal.pageSize.height - 10,
+      { align: 'center' }
+    );
+    doc.text('Subnet Calculator by Prof. Carello Nicolò', 14, doc.internal.pageSize.height - 10);
+  }
+
+  // Save
+  doc.save(`flsm_${networkIP.replace(/\./g, '_')}_${originalCIDR}_to_${newCIDR}.pdf`);
+}
+

@@ -4,6 +4,7 @@ import { Network, Calculator, Eye, Github } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SubnetCalculator } from '@/components/SubnetCalculator';
 import { VLSMCalculator } from '@/components/VLSMCalculator';
+import { FLSMCalculator } from '@/components/FLSMCalculator';
 import { SubnetVisualizer } from '@/components/SubnetVisualizer';
 import { IPv6SubnetCalculator } from '@/components/IPv6SubnetCalculator';
 import { IPv6VLSMCalculator } from '@/components/IPv6VLSMCalculator';
@@ -86,10 +87,14 @@ export default function Home() {
           {/* IPv4 Section */}
           <TabsContent value="ipv4" className="space-y-6">
             <Tabs defaultValue="calculator" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid h-auto p-1">
+              <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid h-auto p-1">
                 <TabsTrigger value="calculator" className="gap-2">
                   <Calculator className="h-4 w-4" />
                   <span>Calculator</span>
+                </TabsTrigger>
+                <TabsTrigger value="flsm" className="gap-2">
+                  <Network className="h-4 w-4" />
+                  <span>FLSM</span>
                 </TabsTrigger>
                 <TabsTrigger value="vlsm" className="gap-2">
                   <Network className="h-4 w-4" />
@@ -103,6 +108,10 @@ export default function Home() {
 
               <TabsContent value="calculator" className="space-y-6">
                 <SubnetCalculator />
+              </TabsContent>
+
+              <TabsContent value="flsm" className="space-y-6">
+                <FLSMCalculator />
               </TabsContent>
 
               <TabsContent value="vlsm" className="space-y-6">
